@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Computing Student Toolkit</title>
+<meta name="description" content="GPA calculator, assignment tracker and quick notes for computing students.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script>try{var t=localStorage.getItem("cst-theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<header class="nav">
+  <div class="nav-inner">
+    <a href="#home" class="brand"><span class="logo">&lt;/&gt;</span> Computing Student Toolkit</a>
+    <nav id="menu" class="menu" aria-label="Main">
+      <a href="#gpa">GPA</a>
+      <a href="#tracker">Assignments</a>
+      <a href="#notes">Notes</a>
+    </nav>
+    <button id="theme" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode"></button>
+    <button id="burger" class="icon-btn burger" aria-label="Open menu" aria-expanded="false" aria-controls="menu">☰</button>
+  </div>
+</header>
+
+<main>
+  <section id="home" class="hero">
+    <div class="hero-text">
+      <h1>Your degree, organised.</h1>
+      <p class="lead">Work out your GPA, keep track of deadlines and keep code notes close. Free, private and saved in your browser.</p>
+      <div class="actions">
+        <a class="btn primary" href="#tracker">Add an assignment</a>
+        <a class="btn" href="#gpa">Calculate GPA</a>
+      </div>
+    </div>
+    <div class="peek" aria-hidden="true">
+      <div class="peek-title">📚 This week</div>
+      <div class="peek-row"><span class="box done"></span><s>Python lab 4</s><span class="tag low">Low</span></div>
+      <div class="peek-row"><span class="box"></span>Java project report<span class="tag high">High</span></div>
+      <div class="peek-row"><span class="box"></span>CSS flexbox quiz<span class="tag med">Medium</span></div>
+      <div class="peek-gpa">Current GPA <strong>3.62</strong></div>
+    </div>
+  </section>
+
+  <section id="gpa" class="panel">
+    <h2>🎓 GPA calculator</h2>
+    <p class="muted">Pick a grade and enter credits for each module. Uses a 4.0 scale.</p>
+    <div id="gpa-rows" class="gpa-rows"></div>
+    <div class="actions">
+      <button id="add-course" class="btn">+ Add module</button>
+      <button id="calc" class="btn primary">Calculate GPA</button>
+      <button id="reset-gpa" class="btn ghost">Clear</button>
+    </div>
+    <div id="gpa-result" class="result" role="status" aria-live="polite">Your GPA will appear here.</div>
+  </section>
+
+  <section id="tracker" class="panel">
+    <h2>✅ Assignment tracker</h2>
+    <form id="task-form" class="task-form">
+      <label>Title<input id="t-title" required maxlength="80" placeholder="e.g. Databases coursework"></label>
+      <label>Due date<input id="t-date" type="date" required></label>
+      <label>Priority
+        <select id="t-pri"><option value="high">High</option><option value="med" selected>Medium</option><option value="low">Low</option></select>
+      </label>
+      <button class="btn primary" type="submit">Add</button>
+    </form>
+    <div class="toolbar">
+      <span id="task-count" class="muted"></span>
+      <select id="t-filter" aria-label="Filter assignments">
+        <option value="all">All</option><option value="open">Open</option><option value="done">Completed</option>
+      </select>
+    </div>
+    <ul id="task-list" class="task-list"></ul>
+  </section>
+
+  <section id="notes" class="panel">
+    <h2>📝 Notes</h2>
+    <div id="tabs" class="tabs" role="tablist">
+      <button role="tab" data-cat="HTML" aria-selected="true">HTML</button>
+      <button role="tab" data-cat="CSS" aria-selected="false">CSS</button>
+      <button role="tab" data-cat="Java" aria-selected="false">Java</button>
+      <button role="tab" data-cat="Python" aria-selected="false">Python</button>
+    </div>
+    <div id="note-list" class="note-list"></div>
+    <form id="note-form" class="note-form">
+      <h3>Add your own note</h3>
+      <input id="n-title" required maxlength="60" placeholder="Note title">
+      <textarea id="n-body" required rows="4" placeholder="Write a note or paste a snippet"></textarea>
+      <button class="btn primary" type="submit">Save note</button>
+    </form>
+  </section>
+</main>
+
+<footer class="footer">Computing Student Toolkit · Your data stays in this browser.</footer>
+<script src="script.js"></script>
+</body>
+</html>
