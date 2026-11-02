@@ -9,6 +9,7 @@ function el(tag, props = {}, ...kids) {
 }
 
 /* ---------- Theme & nav ---------- */
+try {
 const root = document.documentElement;
 const themeBtn = $("#theme");
 function setTheme(t) {
@@ -22,8 +23,10 @@ themeBtn.onclick = () => setTheme(root.dataset.theme === "dark" ? "light" : "dar
 const burger = $("#burger"), menu = $("#menu");
 burger.onclick = () => burger.setAttribute("aria-expanded", menu.classList.toggle("open"));
 menu.onclick = (e) => { if (e.target.tagName === "A") { menu.classList.remove("open"); burger.setAttribute("aria-expanded", "false"); } };
+} catch (err) { console.error(err); }
 
 /* ---------- GPA calculator ---------- */
+try {
 const GRADES = { "A+": 4.0, A: 4.0, "A-": 3.7, "B+": 3.3, B: 3.0, "B-": 2.7, "C+": 2.3, C: 2.0, "C-": 1.7, "D+": 1.3, D: 1.0, F: 0 };
 const rowsBox = $("#gpa-rows");
 
@@ -60,8 +63,10 @@ $("#add-course").onclick = addCourse;
 $("#calc").onclick = calcGPA;
 $("#reset-gpa").onclick = () => { rowsBox.textContent = ""; addCourse(); addCourse(); $("#gpa-result").textContent = "Your GPA will appear here."; };
 addCourse(); addCourse(); addCourse();
+} catch (err) { console.error(err); }
 
 /* ---------- Assignment tracker ---------- */
+try {
 let tasks = load("cst-tasks", []);
 const list = $("#task-list"), filter = $("#t-filter");
 const PRI = { high: 0, med: 1, low: 2 }, PRI_LABEL = { high: "High", med: "Medium", low: "Low" };
@@ -101,8 +106,10 @@ $("#task-form").onsubmit = (e) => {
 };
 filter.onchange = renderTasks;
 renderTasks();
+} catch (err) { console.error(err); }
 
 /* ---------- Notes ---------- */
+try {
 const BUILT_IN = {
   HTML: [
     ["Page skeleton", "Every page needs a doctype, language and viewport tag.", '<!DOCTYPE html>\n<html lang="en">\n<head>\n  <meta charset="UTF-8">\n  <meta name="viewport"\n    content="width=device-width, initial-scale=1">\n  <title>Page</title>\n</head>\n<body></body>\n</html>'],
@@ -156,3 +163,86 @@ $("#note-form").onsubmit = (e) => {
   renderNotes();
 };
 renderNotes();
+} catch (err) { console.error(err); }
+
+/* ---------- Pomodoro timer ---------- */
+(function pomodoro() {
+  const LABEL = { focus: "Focus", short: "Short break", long: "Long break" };
+  const settings = Object.assign({ focus: 25, short: 5, long: 15 }, load("cst-pomo-settings", {}));
+  const dayKey = () => new Date().toISOString().slice(0, 10);
+  let stats = load("cst-pomo-stats", { day: dayKey(), count: 0 });
+  if (stats.day !== dayKey()) stats = { day: dayKey(), count: 0 };
+
+  const state = { mode: "focus", left: settings.focus * 60, end: 0, timer: null, cycle: 0 };
+  const clock = document.getElementById("clock");
+  const startBtn = document.getElementById("p-start");
+  const card = document.querySelector(".timer-card");
+  if (!clock || !startBtn || !card) { console.error("Pomodoro markup not found: update index.html too."); return; }
+
+  const fmt = (s) => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+
+  function render() {
+    clock.textContent = fmt(state.left);
+    document.title = state.timer ? fmt(state.left) + " · " + LABEL[state.mode] : "Computing Student Toolkit";
+    startBtn.textContent = state.timer ? "Pause" : "Start";
+    card.classList.toggle("running", !!state.timer);
+    document.getElementById("p-stats").textContent =
+      stats.count + " focus session" + (stats.count === 1 ? "" : "s") + " completed today";
+    document.querySelectorAll("#modes button").forEach((b) =>
+      b.setAttribute("aria-selected", String(b.dataset.mode === state.mode)));
+  }
+  function stop() { if (state.timer) clearInterval(state.timer); state.timer = null; }
+  function setMode(m) { stop(); state.mode = m; state.left = settings[m] * 60; render(); }
+  function beep() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      const ctx = new AC();
+      [0, 0.3, 0.6].forEach((t) => {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.frequency.value = 880; o.connect(g); g.connect(ctx.destination);
+        g.gain.setValueAtTime(0.15, ctx.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.25);
+        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + 0.25);
+      });
+    } catch (e) {}
+  }
+  function next(finished) {
+    if (state.mode === "focus") {
+      if (finished) { stats.count++; save("cst-pomo-stats", stats); }
+      state.cycle++;
+      setMode(state.cycle % 4 === 0 ? "long" : "short");
+    } else setMode("focus");
+  }
+  function tick() {
+    state.left = Math.max(0, Math.ceil((state.end - Date.now()) / 1000));
+    if (state.left === 0) { stop(); beep(); next(true); return; }
+    render();
+  }
+  function start() {
+    state.end = Date.now() + state.left * 1000;
+    state.timer = setInterval(tick, 250);
+    tick();
+  }
+
+  startBtn.addEventListener("click", () => { if (state.timer) { stop(); render(); } else start(); });
+  document.getElementById("p-reset").addEventListener("click", () => setMode(state.mode));
+  document.getElementById("p-skip").addEventListener("click", () => next(false));
+  document.getElementById("modes").addEventListener("click", (e) => {
+    const b = e.target.closest("button");
+    if (b) setMode(b.dataset.mode);
+  });
+  document.addEventListener("visibilitychange", () => { if (state.timer) tick(); });
+
+  ["focus", "short", "long"].forEach((k) => {
+    const inp = document.getElementById("s-" + k);
+    if (!inp) return;
+    inp.value = settings[k];
+    inp.addEventListener("change", () => {
+      const v = Math.min(+inp.max, Math.max(1, Math.round(+inp.value) || settings[k]));
+      inp.value = settings[k] = v;
+      save("cst-pomo-settings", settings);
+      if (!state.timer && state.mode === k) setMode(k);
+    });
+  });
+  render();
+})();

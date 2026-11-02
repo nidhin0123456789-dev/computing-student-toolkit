@@ -18,6 +18,7 @@
     <nav id="menu" class="menu" aria-label="Main">
       <a href="#gpa">GPA</a>
       <a href="#tracker">Assignments</a>
+      <a href="#timer">Timer</a>
       <a href="#notes">Notes</a>
     </nav>
     <button id="theme" class="icon-btn" aria-label="Toggle dark mode" title="Toggle dark mode"></button>
@@ -73,6 +74,33 @@
       </select>
     </div>
     <ul id="task-list" class="task-list"></ul>
+  </section>
+
+  <section id="timer" class="panel">
+    <h2>⏱️ Pomodoro study timer</h2>
+    <p class="muted">Work in focused blocks with short breaks. Every fourth break is a long one.</p>
+    <div class="timer-card">
+      <div id="modes" class="tabs" role="tablist">
+        <button role="tab" data-mode="focus" aria-selected="true">Focus</button>
+        <button role="tab" data-mode="short" aria-selected="false">Short break</button>
+        <button role="tab" data-mode="long" aria-selected="false">Long break</button>
+      </div>
+      <div id="clock" class="clock" role="timer" aria-live="off">25:00</div>
+      <div class="actions center">
+        <button id="p-start" class="btn primary">Start</button>
+        <button id="p-reset" class="btn">Reset</button>
+        <button id="p-skip" class="btn ghost">Skip</button>
+      </div>
+      <p id="p-stats" class="muted center"></p>
+      <details class="p-settings">
+        <summary>Timer settings</summary>
+        <div class="p-grid">
+          <label>Focus (min)<input id="s-focus" type="number" min="1" max="120"></label>
+          <label>Short break (min)<input id="s-short" type="number" min="1" max="60"></label>
+          <label>Long break (min)<input id="s-long" type="number" min="1" max="60"></label>
+        </div>
+      </details>
+    </div>
   </section>
 
   <section id="notes" class="panel">
