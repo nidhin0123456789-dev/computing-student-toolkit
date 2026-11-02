@@ -24,7 +24,7 @@ h1,h2,h3{line-height:1.2;margin:0}
 .logo{font:500 13px var(--mono);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
 .menu{display:flex;gap:4px}
 .menu a{text-decoration:none;color:var(--muted);padding:6px 10px;border-radius:6px;font-size:15px}
-.menu a:hover{background:var(--hover);color:var(--text)}
+.menu a:hover{background:va+r(--hover);color:var(--text)}
 .icon-btn{background:none;border:0;color:var(--text);font-size:18px;width:36px;height:36px;border-radius:6px;cursor:pointer}
 .icon-btn:hover{background:var(--hover)}
 .burger{display:none}
@@ -125,3 +125,9 @@ label{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--mute
 .p-settings summary{cursor:pointer;color:var(--muted);padding:6px 0}
 .p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
 @media (max-width:760px){.p-grid{grid-template-columns:1fr}}
+.tagline{
+    font-size: 1.2rem;
+    color: #9b9b9b;
+    margin: 12px 0 20px;
+    font-weight: 500;
+}
